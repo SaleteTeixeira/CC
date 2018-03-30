@@ -12,18 +12,12 @@ package reverseproxy;
  * @author isabel, francisco, salete
  */
 public class PDUam {
-    private int idAgente;
     private long ram;
     private double cpu;
     
-    public PDUam(int id, long r, double c){
-        this.idAgente=id;
+    public PDUam(long r, double c){
         this.ram=r;
         this.cpu=c;
-    }
-    
-    public int getIdAgente(){
-        return this.idAgente;
     }
     
     public long getRam(){
@@ -35,7 +29,7 @@ public class PDUam {
     }
     
     public byte[] getBytes(){
-       String s = idAgente+";"+ram+";"+cpu;
+       String s = ram+";"+cpu;
        return s.getBytes();
     }
 }

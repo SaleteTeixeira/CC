@@ -30,23 +30,24 @@ public class WriteMonitor implements Runnable{
     
     public void run(){
         long timeStamp;
+        InetAddress addr;
+        
+        System.out.println("A iniciar o monitor.");
         
         try {
             while(true){
-                System.out.println("Vamos começar.");
                 sleep(10000);
-                InetAddress addr = InetAddress.getByName("239.8.8.8");
                 
+                addr = InetAddress.getByName("239.8.8.8");
                 PDUma msg = new PDUma();
                 DatagramPacket dp = new DatagramPacket(msg.getBytes(),msg.getBytes().length,addr,8888);
                 
-                //ESTA PORCARIA NAO FUNCIONAAAAAAAAAAAAAAAAAAAAAAAAAA
                 timeStamp = System.currentTimeMillis();
-                System.out.println("INICIAL "+timeStamp);
                 
                 this.s.send(dp);
-                System.out.println("Enviei pedido de info aos Agentes.");
                 this.monitor.setTimeStamp(timeStamp);
+                
+                System.out.println("Enviei pedido de info aos Agentes.");
             }
             
         } catch (IOException | InterruptedException ex) {

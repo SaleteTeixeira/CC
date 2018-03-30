@@ -14,15 +14,15 @@ import java.util.Map;
  * @author isabel, francisco, salete
  */
 public class TabelaEstado {
-    private Map<Integer,Info> estado;
+    private Map<InetAddress,Info> estado;
     
     public TabelaEstado(){
         this.estado = new HashMap<>();
     }  
     
-    public void atualizaTabela(int servidor, int portaS, InetAddress ipS, long ram, double cpu, long rtt, double larguraBanda){
+    public void atualizaTabela(int portaS, InetAddress ipS, long ram, double cpu, long rtt, double larguraBanda){
         Info i = new Info(portaS, ipS, ram, cpu, rtt, larguraBanda);
-        this.estado.put(servidor, i);
+        this.estado.put(ipS, i);
         
         System.out.println(estado.toString());
     }
@@ -41,7 +41,7 @@ public class TabelaEstado {
     public String toString(){
         StringBuilder sb = new StringBuilder();
         
-        for(Map.Entry<Integer,Info> s: estado.entrySet()){  
+        for(Map.Entry<InetAddress,Info> s: estado.entrySet()){  
             sb.append("Agente: "+s.getKey());
             sb.append("Info:\n"+s.getValue().toString());
         }
