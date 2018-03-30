@@ -6,13 +6,9 @@
 package reverseproxy;
 
 import java.io.IOException;
-import static java.lang.Thread.sleep;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,84 +20,77 @@ import java.util.logging.Logger;
 public class MonitorUDP {
     private TabelaEstado tabela;
     private ReentrantLock lockTabela;
+    private long timeStamp;
     
     public MonitorUDP(){
         this.tabela = new TabelaEstado();
         this.lockTabela = new ReentrantLock();
+        this.timeStamp = 0;
     }
     
     public MonitorUDP(TabelaEstado t, ReentrantLock l){
         this.tabela = t;
         this.lockTabela = l;
+        this.timeStamp = 0;
     }
     
-    public TabelaEstado getTabelaEstado(){
+    public TabelaEstado getTabela(){
         return this.tabela;
+    }
+    
+    public long getTimeStamp(){
+        return this.timeStamp;
+    }
+    
+    public void setTimeStamp(long t){
+        this.timeStamp = t;
     }
     
     public static void main(String[] args) throws InterruptedException{
         try {
             String aux;
-            char[] tmp;
-            char c;
-            int id=-1, j=0, i=0, n=0, portaS=-1;
-            long ram=-1, timeStampI=-1, timeStampF=-1, rtt=-1;
+            String[] partes;
+            int id=-1, portaS=-1;
+            long ram=-1, timeStampF=-1, rtt=-1;
             double cpu=-1, larguraBanda=0;
             byte[] buf = new byte[1024];
-            Date d = new Date();
+            InetAddress addr;
             
             MonitorUDP m = new MonitorUDP();
-            DatagramSocket s = new DatagramSocket(8888);
+            DatagramSocket s = new DatagramSocket();
             
-           Thread tr = new Thread(new WriteMonitor(s));
-           tr.start();
+            Thread tr = new Thread(new WriteMonitor(s,m));
+            tr.start();
             
             while(true){
-                //InetAddress[] ia = InetAddress.getAllByName("239.8.8.8");
-                
-                //for(int g=0; g<ia.length; g++){
-                    timeStampI = d.getTime();
-                    
-                    DatagramPacket recv = new DatagramPacket(buf, buf.length);
-                    s.receive(recv);
+                System.out.println("Pronto a receber.");
 
-                    timeStampF = d.getTime();
+                addr = InetAddress.getByName("239.8.8.8");
+                DatagramPacket recv = new DatagramPacket(buf, buf.length);
+                s.receive(recv);
 
-                    aux = buf.toString();
-                    tmp = new char[aux.length()];
+                //ESTA PORCARIA NAO FUNCIONAAAAAAAAAAAAAAAAAAAAA
+                timeStampF = System.currentTimeMillis();
+                System.out.println("FINAL "+timeStampF);
+                System.out.println("Recebi info para atualizar a tabela.");
 
-                    for(i=0; i<aux.length();i++){
-                        n=i++;
-                        j=0;
+                aux = new String(buf, "UTF-8");
+                aux = aux.trim();
+                partes = aux.split(";");
 
-                        while((c = aux.charAt(n)) != ';' && n<aux.length()-1 && j<tmp.length){
-                                tmp[j] = c;
-                                n++;
-                                j++;
-                        }
+                id = Integer.parseInt(partes[0]);
+                ram = Long.parseLong(partes[1]);
+                cpu = Double.parseDouble(partes[2]);
+                rtt = timeStampF - m.getTimeStamp();
+                if(rtt!=0) larguraBanda = (buf.length * 8) / rtt;
 
-                        if(aux.charAt(i) == 'I'){
-                            id = Integer.parseInt(Arrays.toString(tmp));
-                        }
-                        else if(aux.charAt(i) == 'R'){
-                            ram = Long.parseLong(Arrays.toString(tmp));
-                        }
-                        else if(aux.charAt(i) == 'C'){
-                            cpu = Double.parseDouble(Arrays.toString(tmp));
-                        }
-                        
-                        tmp = null;
-                        i=n;
-                    //}
+                //ESTE ENDEREÇO E A PORTA ESTÃO MAL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                portaS = recv.getPort();
+                InetAddress ipS = recv.getAddress();
 
-                    rtt = timeStampF - timeStampI;
-                    if(rtt!=0) larguraBanda = (buf.length * 8) / rtt;
+                m.getTabela().atualizaTabela(id, portaS, ipS, ram, cpu, rtt, larguraBanda);
 
-                    portaS = recv.getPort();
-                    InetAddress ipS = recv.getAddress();
-
-                    m.getTabelaEstado().atualizaTabela(id, portaS, ipS, ram, cpu, rtt, larguraBanda);
-                }
+                System.out.println("Acabei de atualizar a tabela.");
             }
             
             //tr.join();
