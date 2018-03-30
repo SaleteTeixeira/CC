@@ -6,14 +6,15 @@
 package reverseproxy;
 
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 import java.lang.management.ManagementFactory;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketAddress;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
@@ -21,72 +22,71 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class AgenteUDP  {
     private int id;
-    private ReentrantLock lock;
-    private Condition receber;
     
     public AgenteUDP(int id){
         this.id=id;
-        this.lock = new ReentrantLock();
-        this.receber = lock.newCondition();
     }
     
     public int getId(){
         return this.id;
     }
     
-    public ReentrantLock getLock(){
-        return this.lock;
-    }
-    
-    public Condition getReceber(){
-        return this.receber;
-    }
-    
-    public void lock(){
-        this.lock.lock();
-    }
-    
-    public void unlock(){
-        this.lock.unlock();
-    }
-    
     public static void main(String[] args){
+        Random rand;
+        int sec;
         long ram, timeStamp;
         double cpu;
-        
-        for(int i =0; i< args.length; i++)
-            System.out.println(args[i]);
+        String pedido;
+        InetAddress group;
+        SocketAddress monitorA;
         
         try {
             //AgenteUDP a = new AgenteUDP(Integer.parseInt(args[1]));
             AgenteUDP a = new AgenteUDP(1);
-            InetAddress group = InetAddress.getByName("239.8.8.8");
+            group = InetAddress.getByName("239.8.8.8");
             MulticastSocket s = new MulticastSocket(8888);
             s.joinGroup(group);
             
-          
-            Thread tr = new Thread(new LerAgente(s,a.getLock(),a.getReceber()));
-            tr.start();
-            
             while(true){
-                    a.getReceber().await();
+                System.out.println("Agente "+a.getId()+". Estou à escuta.");
+                byte[] aReceber = new byte[1024];
+                DatagramPacket recv = new DatagramPacket(aReceber,aReceber.length);
+                s.receive(recv);
                 
+                monitorA = recv.getSocketAddress();
+        
+                System.out.println("Agente "+a.getId()+". Recebi uma mensagem.");
+                
+                pedido = new String(aReceber, "UTF-8");
+                pedido = pedido.trim();
+                
+                if(pedido.equals("Send me information.")){
+                    
+                    rand = new Random();
+                    sec = rand.nextInt(10);
+                    sleep(sec);
+                    
+                    System.out.println("Agente "+a.getId()+". É do MonitorUDP a pedir informações.");
+                    
                     com.sun.management.OperatingSystemMXBean osMBean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
                     ram = osMBean.getFreePhysicalMemorySize();
                     cpu = osMBean.getProcessCpuLoad();
                     
                     PDUam msg = new PDUam(a.getId(),ram,cpu);
-                    DatagramPacket dp = new DatagramPacket(msg.getBytes(),msg.getBytes().length,group,8888);
+                    DatagramPacket dp = new DatagramPacket(msg.getBytes(),msg.getBytes().length,monitorA);
                     s.send(dp);
+                    
+                    System.out.println("Agente "+a.getId()+". Enviei as minhas informações ao Monitor.");
+                    System.out.println(ram+" "+cpu);
+                }
             }
             
-            //tr.join();
             //s.leaveGroup(group);
             //s.close();
             
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(AgenteUDP.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } 
     }
     
 }

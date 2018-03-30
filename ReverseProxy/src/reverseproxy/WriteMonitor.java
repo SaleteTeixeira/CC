@@ -21,19 +21,33 @@ import java.util.logging.Logger;
  */
 public class WriteMonitor implements Runnable{
     private DatagramSocket s;
+    private MonitorUDP monitor;
     
-    public WriteMonitor(DatagramSocket sc){
+    public WriteMonitor(DatagramSocket sc, MonitorUDP m){
         this.s = sc;
+        this.monitor = m;
     }
     
     public void run(){
+        long timeStamp;
+        
         try {
-            sleep(5000);
-            InetAddress addr = InetAddress.getByName("239.8.8.8");
-            
-            PDUma msg = new PDUma();
-            DatagramPacket dp = new DatagramPacket(msg.getBytes(),msg.getBytes().length,addr,8888);
-            this.s.send(dp);
+            while(true){
+                System.out.println("Vamos começar.");
+                sleep(10000);
+                InetAddress addr = InetAddress.getByName("239.8.8.8");
+                
+                PDUma msg = new PDUma();
+                DatagramPacket dp = new DatagramPacket(msg.getBytes(),msg.getBytes().length,addr,8888);
+                
+                //ESTA PORCARIA NAO FUNCIONAAAAAAAAAAAAAAAAAAAAAAAAAA
+                timeStamp = System.currentTimeMillis();
+                System.out.println("INICIAL "+timeStamp);
+                
+                this.s.send(dp);
+                System.out.println("Enviei pedido de info aos Agentes.");
+                this.monitor.setTimeStamp(timeStamp);
+            }
             
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(WriteMonitor.class.getName()).log(Level.SEVERE, null, ex);

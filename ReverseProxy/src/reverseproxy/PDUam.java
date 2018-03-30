@@ -1,9 +1,11 @@
+package reverseproxy;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package reverseproxy;
+
 
 /**
  *
@@ -33,7 +35,7 @@ public class PDUam {
     }
     
     public byte[] getBytes(){
-       String s = "I"+idAgente+";R"+ram+";C"+cpu;
+       String s = idAgente+";"+ram+";"+cpu;
        return s.getBytes();
     }
 }

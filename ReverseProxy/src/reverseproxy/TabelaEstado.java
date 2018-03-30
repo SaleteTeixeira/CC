@@ -23,6 +23,8 @@ public class TabelaEstado {
     public void atualizaTabela(int servidor, int portaS, InetAddress ipS, long ram, double cpu, long rtt, double larguraBanda){
         Info i = new Info(portaS, ipS, ram, cpu, rtt, larguraBanda);
         this.estado.put(servidor, i);
+        
+        System.out.println(estado.toString());
     }
     
     public void removerServidorTab(int servidor) throws ServidorInexistenteException {
@@ -34,5 +36,16 @@ public class TabelaEstado {
     public int algoritmoSelecao(){
         //pensar
         return 1; //portaS
+    }
+    
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        
+        for(Map.Entry<Integer,Info> s: estado.entrySet()){  
+            sb.append("Agente: "+s.getKey());
+            sb.append("Info:\n"+s.getValue().toString());
+        }
+        
+        return sb.toString();
     }
 }

@@ -49,4 +49,17 @@ public class Info {
     public double getLarguraBanda(){
         return this.larguraBanda;
     }
+    
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+         
+        sb.append("Porta: "+this.portaS+"\n");
+        sb.append("IP: "+this.ipS+"\n");
+        sb.append("RAM: "+this.ram+"\n");
+        sb.append("CPU: "+this.cpu+"\n");
+        sb.append("RTT: "+this.rtt+"\n");
+        sb.append("Largura de Banda: "+this.larguraBanda+"\n");
+        
+        return sb.toString();
+    }
 }
