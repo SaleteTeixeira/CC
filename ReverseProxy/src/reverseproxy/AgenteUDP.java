@@ -21,69 +21,60 @@ import java.util.logging.Logger;
  * @author isabel, francisco, salete
  */
 public class AgenteUDP  {
-    private int id;
     
-    public AgenteUDP(int id){
-        this.id=id;
-    }
-    
-    public int getId(){
-        return this.id;
+    public AgenteUDP(){
+        
     }
     
     public static void main(String[] args){
-        Random rand;
         int sec;
-        long ram, timeStamp;
+        long ram;
         double cpu;
+        Random rand;
         String pedido;
+        byte[] aReceber;
         InetAddress group;
         SocketAddress monitorA;
         
         try {
-            //AgenteUDP a = new AgenteUDP(Integer.parseInt(args[1]));
-            AgenteUDP a = new AgenteUDP(1);
+            AgenteUDP a = new AgenteUDP();
+            
             group = InetAddress.getByName("239.8.8.8");
             MulticastSocket s = new MulticastSocket(8888);
             s.joinGroup(group);
             
             while(true){
-                System.out.println("Agente "+a.getId()+". Estou à escuta.");
-                byte[] aReceber = new byte[1024];
+                System.out.println("Estou à escuta.");
+                
+                aReceber = new byte[1024];
                 DatagramPacket recv = new DatagramPacket(aReceber,aReceber.length);
                 s.receive(recv);
                 
                 monitorA = recv.getSocketAddress();
         
-                System.out.println("Agente "+a.getId()+". Recebi uma mensagem.");
+                System.out.println("Recebi uma mensagem.");
                 
                 pedido = new String(aReceber, "UTF-8");
                 pedido = pedido.trim();
                 
                 if(pedido.equals("Send me information.")){
+                    System.out.println("É do MonitorUDP a pedir informações.");
                     
                     rand = new Random();
                     sec = rand.nextInt(10);
                     sleep(sec);
                     
-                    System.out.println("Agente "+a.getId()+". É do MonitorUDP a pedir informações.");
-                    
                     com.sun.management.OperatingSystemMXBean osMBean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
                     ram = osMBean.getFreePhysicalMemorySize();
-                    cpu = osMBean.getProcessCpuLoad();
+                    cpu = osMBean.getSystemCpuLoad();
                     
-                    PDUam msg = new PDUam(a.getId(),ram,cpu);
+                    PDUam msg = new PDUam(ram,cpu);
                     DatagramPacket dp = new DatagramPacket(msg.getBytes(),msg.getBytes().length,monitorA);
                     s.send(dp);
                     
-                    System.out.println("Agente "+a.getId()+". Enviei as minhas informações ao Monitor.");
-                    System.out.println(ram+" "+cpu);
+                    System.out.println("Enviei as minhas informações ao Monitor.");
                 }
             }
-            
-            //s.leaveGroup(group);
-            //s.close();
-            
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(AgenteUDP.class.getName()).log(Level.SEVERE, null, ex);
         } 
