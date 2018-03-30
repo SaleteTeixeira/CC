@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tp2;
+package reverseproxy;
 
 import java.io.IOException;
 import static java.lang.Thread.sleep;
@@ -53,13 +53,10 @@ public class MonitorUDP {
             MonitorUDP m = new MonitorUDP();
             DatagramSocket s = new DatagramSocket(8888);
             
-            PDUma msg = new PDUma();
-            DatagramPacket dp = new DatagramPacket(msg.getBytes(),msg.getLength());
+           Thread tr = new Thread(new WriteMonitor(s));
+           tr.start();
             
             while(true){
-                //sleep(10000);
-                s.send(dp);
-                
                 //InetAddress[] ia = InetAddress.getAllByName("239.8.8.8");
                 
                 //for(int g=0; g<ia.length; g++){
@@ -106,6 +103,9 @@ public class MonitorUDP {
                     m.getTabelaEstado().atualizaTabela(id, portaS, ipS, ram, cpu, rtt, larguraBanda);
                 }
             }
+            
+            //tr.join();
+            //s.close();
             
         } catch (IOException ex) {
             Logger.getLogger(MonitorUDP.class.getName()).log(Level.SEVERE, null, ex);

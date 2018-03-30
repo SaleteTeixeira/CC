@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tp2;
+package reverseproxy;
 
 /**
  *
@@ -35,9 +35,5 @@ public class PDUam {
     public byte[] getBytes(){
        String s = "I"+idAgente+";R"+ram+";C"+cpu;
        return s.getBytes();
-    }
-    
-    public int getLength(){
-        return Integer.toString(idAgente).length() + Long.toString(ram).length() + Double.toString(cpu).length();
     }
 }
