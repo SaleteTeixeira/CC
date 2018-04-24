@@ -80,7 +80,6 @@ public class MonitorUDP {
                 
                 if(rtt!=0) larguraBanda = (buf.length * 8) / rtt;
 
-                //ESTE ENDEREÇO E A PORTA ESTÃO MAL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 portaS = recv.getPort();
                 ipS = recv.getAddress();
 
