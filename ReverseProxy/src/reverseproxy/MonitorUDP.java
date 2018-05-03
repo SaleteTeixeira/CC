@@ -62,13 +62,13 @@ public class MonitorUDP {
             tr.start();
             
             while(true){
-                System.out.println("Pronto a receber.");
+                System.out.println("MONITOR: Pronto a receber.");
 
                 DatagramPacket recv = new DatagramPacket(buf, buf.length);
                 s.receive(recv);
                 timeStampF = System.currentTimeMillis();
                 
-                System.out.println("Recebi info para atualizar a tabela.");
+                System.out.println("MONITOR: Recebi info para atualizar a tabela.");
 
                 aux = new String(buf, "UTF-8");
                 aux = aux.trim();
@@ -76,16 +76,16 @@ public class MonitorUDP {
 
                 ram = Long.parseLong(partes[0]);
                 cpu = Double.parseDouble(partes[1]);
+                larguraBanda = Double.parseDouble(partes[2]);
                 rtt = timeStampF - m.getTimeStamp();
-                
-                if(rtt!=0) larguraBanda = (buf.length * 8) / rtt;
 
                 portaS = recv.getPort();
                 ipS = recv.getAddress();
 
-                m.getTabela().atualizaTabela(portaS, ipS, ram, cpu, rtt, larguraBanda);
+                m.getTabela().atualizaTabela(portaS, ipS, ram, cpu, rtt, larguraBanda,timeStampF);
 
-                System.out.println("Acabei de atualizar a tabela.");
+                System.out.println("MONITOR: Acabei de atualizar a tabela.");
+                System.out.println(m.tabela.toString());
             }
         } catch (IOException ex) {
             Logger.getLogger(MonitorUDP.class.getName()).log(Level.SEVERE, null, ex);

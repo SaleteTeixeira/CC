@@ -32,7 +32,7 @@ public class WriteMonitor implements Runnable{
         long timeStamp;
         InetAddress addr;
         
-        System.out.println("A iniciar o monitor.");
+        System.out.println("MONITOR: A inicializar.");
         
         try {
             while(true){
@@ -47,7 +47,9 @@ public class WriteMonitor implements Runnable{
                 this.s.send(dp);
                 this.monitor.setTimeStamp(timeStamp);
                 
-                System.out.println("Enviei pedido de info aos Agentes.");
+                System.out.println("MONITOR: Enviei pedido de info aos Agentes.");
+                
+                this.monitor.getTabela().removerServidorTab();
             }
             
         } catch (IOException | InterruptedException ex) {

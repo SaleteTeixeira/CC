@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author sofia
  */
 public class ReverseProxy {
-    /*private TabelaEstado tabela;
+   /*private TabelaEstado tabela;
     private ReentrantLock lockTabela;
    
     public ReverseProxy(){
