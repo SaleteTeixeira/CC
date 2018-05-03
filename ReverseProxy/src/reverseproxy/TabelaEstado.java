@@ -20,16 +20,20 @@ public class TabelaEstado {
         this.estado = new HashMap<>();
     }  
     
-    public void atualizaTabela(int portaS, InetAddress ipS, long ram, double cpu, long rtt, double larguraBanda){
-        Info i = new Info(portaS, ipS, ram, cpu, rtt, larguraBanda);
+    public void atualizaTabela(int portaS, InetAddress ipS, long ram, double cpu, long rtt, double larguraBanda, long time){
+        Info i = new Info(portaS, ipS, ram, cpu, rtt, larguraBanda, time);
         this.estado.put(ipS, i);
-        
-        System.out.println(estado.toString());
     }
     
-    public void removerServidorTab(int servidor) throws ServidorInexistenteException {
-        if(this.estado.remove(servidor)==null){
-            throw new ServidorInexistenteException("Servidor inexistente na tabela de estado.");
+    public void removerServidorTab() {
+        long rem, timeOut = 5000;
+        
+        for(Map.Entry<InetAddress,Info> s: estado.entrySet()){
+            rem = System.currentTimeMillis() - s.getValue().getTime();
+            if(rem>timeOut){
+                this.estado.remove(s);
+                System.out.println("Removido Agente "+s.getKey());
+            }
         }
     }
     
@@ -41,10 +45,13 @@ public class TabelaEstado {
     public String toString(){
         StringBuilder sb = new StringBuilder();
         
+        sb.append("\n###############TABELA###############\n");
         for(Map.Entry<InetAddress,Info> s: estado.entrySet()){  
-            sb.append("Agente: "+s.getKey());
-            sb.append("Info:\n"+s.getValue().toString());
+            sb.append("Agente: "+s.getKey()+"\n");
+            sb.append(s.getValue().toString());
+            sb.append("------------------------------------\n");
         }
+        sb.append("####################################\n");
         
         return sb.toString();
     }

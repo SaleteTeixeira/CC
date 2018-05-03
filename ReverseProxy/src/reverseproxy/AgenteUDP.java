@@ -23,13 +23,12 @@ import java.util.logging.Logger;
 public class AgenteUDP  {
     
     public AgenteUDP(){
-        
     }
     
     public static void main(String[] args){
         int sec;
         long ram;
-        double cpu;
+        double cpu, larguraBanda;
         Random rand;
         String pedido;
         byte[] aReceber;
@@ -67,8 +66,9 @@ public class AgenteUDP  {
                     com.sun.management.OperatingSystemMXBean osMBean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
                     ram = osMBean.getFreePhysicalMemorySize();
                     cpu = osMBean.getSystemCpuLoad();
+                    larguraBanda = 1; //MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
                     
-                    PDUam msg = new PDUam(ram,cpu);
+                    PDUam msg = new PDUam(ram,cpu,larguraBanda);
                     DatagramPacket dp = new DatagramPacket(msg.getBytes(),msg.getBytes().length,monitorA);
                     s.send(dp);
                     

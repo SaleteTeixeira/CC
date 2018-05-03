@@ -14,16 +14,17 @@ import java.net.InetAddress;
 public class Info {
     private int portaS;
     private InetAddress ipS;
-    private long ram, rtt;
+    private long ram, rtt, time;
     private double cpu, larguraBanda;
     
-    public Info(int portaS, InetAddress ipS, long ram, double cpu, long rtt, double larguraBanda){
+    public Info(int portaS, InetAddress ipS, long ram, double cpu, long rtt, double larguraBanda, long time){
         this.portaS=portaS;
         this.ipS=ipS;
         this.ram=ram;
         this.cpu=cpu;
         this.rtt=rtt;
         this.larguraBanda=larguraBanda;
+        this.time=time;
     }
 
     public int getPortaS(){
@@ -50,6 +51,10 @@ public class Info {
         return this.larguraBanda;
     }
     
+    public long getTime(){
+        return this.time;
+    }
+    
     public String toString(){
         StringBuilder sb = new StringBuilder();
          
@@ -59,6 +64,7 @@ public class Info {
         sb.append("CPU: "+this.cpu+"\n");
         sb.append("RTT: "+this.rtt+"\n");
         sb.append("Largura de Banda: "+this.larguraBanda+"\n");
+        sb.append("TIME: "+this.time+"\n");
         
         return sb.toString();
     }
