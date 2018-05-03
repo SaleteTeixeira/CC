@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package reverseproxy;
 
 import java.io.IOException;
@@ -14,10 +9,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Thread que recebe pacotes PDU, provenientes dos Agentes, com as devidas informações e atualiza a Tabela.
+ * 
  * @author isabel, francisco, salete
  */
-public class MonitorUDP {
+public class MonitorUDP implements Runnable{
     private TabelaEstado tabela;
     private ReentrantLock lockTabela;
     private long timeStamp;
@@ -46,7 +42,7 @@ public class MonitorUDP {
         this.timeStamp = t;
     }
     
-    public static void main(String[] args) throws InterruptedException{
+    public void run(){
         int portaS=-1;
         long ram=-1, timeStampF=-1, rtt=-1;
         double cpu=-1, larguraBanda=0;String aux;
@@ -55,10 +51,9 @@ public class MonitorUDP {
         InetAddress ipS;
         
         try {
-            MonitorUDP m = new MonitorUDP();
             DatagramSocket s = new DatagramSocket();
             
-            Thread tr = new Thread(new WriteMonitor(s,m));
+            Thread tr = new Thread(new WriteMonitor(s,this));
             tr.start();
             
             while(true){
@@ -77,15 +72,18 @@ public class MonitorUDP {
                 ram = Long.parseLong(partes[0]);
                 cpu = Double.parseDouble(partes[1]);
                 larguraBanda = Double.parseDouble(partes[2]);
-                rtt = timeStampF - m.getTimeStamp();
+                rtt = timeStampF - this.timeStamp;
 
                 portaS = recv.getPort();
                 ipS = recv.getAddress();
-
-                m.getTabela().atualizaTabela(portaS, ipS, ram, cpu, rtt, larguraBanda,timeStampF);
-
+                
+                this.lockTabela.lock();
+                
+                this.tabela.atualizaTabela(portaS, ipS, ram, cpu, rtt, larguraBanda,timeStampF);
                 System.out.println("MONITOR: Acabei de atualizar a tabela.");
-                System.out.println(m.tabela.toString());
+                System.out.println(this.tabela.toString());
+                
+                this.lockTabela.unlock();
             }
         } catch (IOException ex) {
             Logger.getLogger(MonitorUDP.class.getName()).log(Level.SEVERE, null, ex);

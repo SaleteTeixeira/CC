@@ -8,7 +8,8 @@ package reverseproxy;
 import java.net.InetAddress;
 
 /**
- *
+ * Classe que tem como objetivo armazenar a informação de um Agente.
+ * 
  * @author isabel, francisco, salete
  */
 public class Info {
@@ -16,6 +17,13 @@ public class Info {
     private InetAddress ipS;
     private long ram, rtt, time;
     private double cpu, larguraBanda;
+    
+    public Info(){
+        this.ram=-1;
+        this.cpu=-1;
+        this.rtt=-1;
+        this.larguraBanda=-1;
+    }
     
     public Info(int portaS, InetAddress ipS, long ram, double cpu, long rtt, double larguraBanda, long time){
         this.portaS=portaS;

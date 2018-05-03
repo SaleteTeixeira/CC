@@ -1,18 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package reverseproxy;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- *
- * @author sofia
+ * Classe principal que proporciona uma comunicação entre Clientes e Agentes.
+ * 
+ * @author isabel, francisco, salete
  */
 public class ReverseProxy {
-   /*private TabelaEstado tabela;
+    private TabelaEstado tabela;
     private ReentrantLock lockTabela;
    
     public ReverseProxy(){
@@ -21,16 +22,24 @@ public class ReverseProxy {
     }
     
     public static void main(String[] args) {
-        ReverseProxy rp = new ReverseProxy();
-        
-        Thread monitor = new Thread(new MonitorUDP(rp.tabela, rp.lockTabela));
-        monitor.start();
-        
-        //while(1){
-            //recebe pedidos dos clientes
-            //calcula melhor servidor
-            //manda servidor
-            //lê servidor
-        //}
-    }*/
+        try {
+            ReverseProxy rp = new ReverseProxy();
+            ServerSocket Server;
+            
+            Server = new ServerSocket(80);
+            
+            Thread monitor = new Thread(new MonitorUDP(rp.tabela, rp.lockTabela));
+            monitor.start();
+                        
+            while(true){
+                Socket clientSocket = null;
+                clientSocket = Server.accept();
+                               
+                Thread worker = new Thread(new Worker(rp.tabela, rp.lockTabela, clientSocket));
+                worker.start();
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ReverseProxy.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }

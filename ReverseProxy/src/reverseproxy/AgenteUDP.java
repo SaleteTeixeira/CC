@@ -17,7 +17,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Classe que define um Agente.
+ * Este encontra-se sempre à escuta de pedidos por parte do Monitor, enviando-lhe as suas informações
+ * 
+ * .................
+ * 
+ * 
  * @author isabel, francisco, salete
  */
 public class AgenteUDP  {

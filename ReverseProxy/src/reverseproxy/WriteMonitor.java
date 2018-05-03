@@ -1,6 +1,5 @@
 package reverseproxy;
 
-
 import java.io.IOException;
 import static java.lang.Thread.sleep;
 import java.net.DatagramPacket;
@@ -9,15 +8,10 @@ import java.net.InetAddress;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- *
- * @author salete
+ * Thread que de 10 em 10 segundos manda um pedido UDP aos Agentes
+ * 
+ * @author isabel, francisco, salete
  */
 public class WriteMonitor implements Runnable{
     private DatagramSocket s;
